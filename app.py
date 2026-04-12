@@ -15,17 +15,19 @@ st.markdown("""
         display: flex;
         gap: 1.2rem;
         margin-bottom: 2rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap; /* Force single row */
+        width: 100%;
     }
     .kpi-card {
-        flex: 1;
-        min-width: 200px;
+        flex: 1 1 0; /* Distribute space perfectly evenly */
+        min-width: 0; /* Prevent flex items from overflowing */
         background: linear-gradient(145deg, #1e293b, #0f172a);
-        padding: 24px;
+        padding: 20px;
         border-radius: 12px;
         border: 1px solid #334155;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s ease, border-color 0.2s ease;
+        overflow: hidden; /* Contain any overflowing text */
     }
     .kpi-card:hover {
         transform: translateY(-4px);
@@ -35,20 +37,24 @@ st.markdown("""
     /* Typography */
     .kpi-title {
         color: #94a3b8;
-        font-size: 0.85rem;
+        font-size: 0.75rem; /* Scaled down slightly */
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 12px;
         display: flex;
         align-items: center;
+        white-space: nowrap; /* Force single line */
     }
     .kpi-value {
         color: #f8fafc;
-        font-size: 2.4rem;
+        font-size: 2rem; /* Scaled down slightly to fit long numbers */
         font-weight: 700;
         margin-bottom: 8px;
         line-height: 1.1;
+        white-space: nowrap; /* Force single line */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Add ... if the number is massively long */
     }
     
     /* Delta Badges (Pills) */
@@ -62,13 +68,15 @@ st.markdown("""
         display: inline-flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
     }
     .kpi-delta-neutral {
         color: #94a3b8;
         font-size: 0.85rem;
+        white-space: nowrap;
     }
 
-    /* Interactive Tooltips */
+    /* Interactive Tooltips (Unchanged) */
     .info-icon {
         position: relative;
         display: inline-block;
@@ -98,6 +106,7 @@ st.markdown("""
         font-weight: 400;
         border: 1px solid #475569;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        white-space: normal; /* Keep tooltips multiline */
     }
     /* Tooltip Arrow */
     .info-icon .tooltip-text::after {
@@ -119,8 +128,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Header ---
-st.title("✈️ AeroCarbon Exchange MVP")
-st.markdown("Enterprise infrastructure for measuring, verifying, and monetizing aviation emissions reductions.")
+col_logo, col_header = st.columns([1, 6]) # Adjust ratio based on how large you want the logo
+
+with col_logo:
+    # Use the exact filename you uploaded
+    st.image("Logo.png", use_container_width=True) 
+
+with col_header:
+    st.title("AeroCarbon Exchange MVP") # Removed the plane emoji since you have a nice logo now
+    st.markdown("Enterprise infrastructure for measuring, verifying, and monetizing aviation emissions reductions.")
+
 st.divider()
 
 # --- Sidebar: Control Panel ---
