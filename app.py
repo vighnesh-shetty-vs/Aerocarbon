@@ -128,7 +128,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Header ---
-col_logo, col_header = st.columns([1, 6]) # Adjust ratio based on how large you want the logo
+col_logo, col_header = st.columns([1.5, 4]) # Adjust ratio based on how large you want the logo
 
 with col_logo:
     # Use the exact filename you uploaded
