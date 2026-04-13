@@ -8,7 +8,6 @@ import numpy as np
 st.set_page_config(page_title="AeroCarbon Exchange MVP", layout="wide", initial_sidebar_state="expanded")
 
 # --- Advanced Custom CSS (Bootstrap-inspired UI) ---
-# New CSS rules for the process flow visualization are added at the end of this block
 st.markdown("""
     <style>
     /* KPI Card Grid */
@@ -16,17 +15,19 @@ st.markdown("""
         display: flex;
         gap: 1.2rem;
         margin-bottom: 2rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap; /* Force single row */
+        width: 100%;
     }
     .kpi-card {
-        flex: 1;
-        min-width: 200px;
+        flex: 1 1 0; /* Distribute space perfectly evenly */
+        min-width: 0; /* Prevent flex items from overflowing */
         background: linear-gradient(145deg, #1e293b, #0f172a);
-        padding: 24px;
+        padding: 20px;
         border-radius: 12px;
         border: 1px solid #334155;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s ease, border-color 0.2s ease;
+        overflow: hidden; /* Contain any overflowing text */
     }
     .kpi-card:hover {
         transform: translateY(-4px);
@@ -36,20 +37,24 @@ st.markdown("""
     /* Typography */
     .kpi-title {
         color: #94a3b8;
-        font-size: 0.85rem;
+        font-size: 0.75rem; /* Scaled down slightly */
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 12px;
         display: flex;
         align-items: center;
+        white-space: nowrap; /* Force single line */
     }
     .kpi-value {
         color: #f8fafc;
-        font-size: 2.4rem;
+        font-size: 2rem; /* Scaled down slightly to fit long numbers */
         font-weight: 700;
         margin-bottom: 8px;
         line-height: 1.1;
+        white-space: nowrap; /* Force single line */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Add ... if the number is massively long */
     }
     
     /* Delta Badges (Pills) */
@@ -63,13 +68,15 @@ st.markdown("""
         display: inline-flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
     }
     .kpi-delta-neutral {
         color: #94a3b8;
         font-size: 0.85rem;
+        white-space: nowrap;
     }
 
-    /* Interactive Tooltips */
+    /* Interactive Tooltips (Unchanged) */
     .info-icon {
         position: relative;
         display: inline-block;
@@ -99,6 +106,7 @@ st.markdown("""
         font-weight: 400;
         border: 1px solid #475569;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        white-space: normal; /* Keep tooltips multiline */
     }
     /* Tooltip Arrow */
     .info-icon .tooltip-text::after {
@@ -116,82 +124,20 @@ st.markdown("""
         opacity: 1;
         bottom: 130%;
     }
-
-    /* --- System Process Flow Styles (New) --- */
-    .process-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        margin: 2.5rem 0;
-        padding: 0 70px; /* Buffer for line connectors */
-    }
-    .connector-line {
-        position: absolute;
-        top: 50%;
-        left: 70px;
-        right: 70px;
-        height: 2px;
-        background: rgba(16, 185, 129, 0.2); /* Faint green */
-        transform: translateY(-50%);
-        z-index: 1;
-    }
-    .process-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 2;
-        width: 140px; /* Fixed width for labels */
-    }
-    .step-icon-circle {
-        width: 76px;
-        height: 76px;
-        border-radius: 50%;
-        background: #0f172a;
-        border: 2px solid #10b981;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); /* Glow effect */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 2.2rem;
-        margin-bottom: 18px;
-    }
-    .step-label {
-        color: #94a3b8;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        text-align: center;
-        white-space: nowrap;
-    }
-    .integrity-card {
-        background: linear-gradient(145deg, #1e293b, #0f172a);
-        padding: 40px;
-        border-radius: 12px;
-        border: 1px solid #334155;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        margin-top: 2.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .integrity-title {
-        color: #f8fafc;
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-    }
-    .integrity-text {
-        color: #94a3b8;
-        font-size: 1.1rem;
-        line-height: 1.7;
-    }
     </style>
 """, unsafe_allow_html=True)
 
 # --- Header ---
-st.title("✈️ AeroCarbon Exchange MVP")
-st.markdown("Enterprise infrastructure for measuring, verifying, and monetizing aviation emissions reductions.")
+col_logo, col_header = st.columns([1.5, 4]) # Adjust ratio based on how large you want the logo
+
+with col_logo:
+    # Use the exact filename you uploaded
+    st.image("Logo.png", use_container_width=True) 
+
+with col_header:
+    st.title("AeroCarbon Exchange MVP") # Removed the plane emoji since you have a nice logo now
+    st.markdown("Enterprise infrastructure for measuring, verifying, and monetizing aviation emissions reductions.")
+
 st.divider()
 
 # --- Sidebar: Control Panel ---
@@ -257,8 +203,7 @@ kpi_html = f"""<div class="kpi-container">
 st.markdown(kpi_html, unsafe_allow_html=True)
 
 # --- Tabbed Interface ---
-# New tab "🔄 System Process Flow" is added to the list
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Executive Dashboard", "⚙️ Emissions Breakdown", "🛡️ Audit Ledger", "🔄 System Process Flow"])
+tab1, tab2, tab3 = st.tabs(["📊 Executive Dashboard", "⚙️ Emissions Breakdown", "🛡️ Audit Ledger"])
 
 with tab1:
     col_bar, col_line = st.columns((1, 1.2))
@@ -380,48 +325,3 @@ with tab3:
         verified_count = edited_df[edited_df['Status'] == 'Verified'].shape[0]
         st.balloons()
         st.success(f"Successfully minted credits for {verified_count} verified flight records!")
-
-# --- Tab 4: System Process Flow (New Implementation) ---
-with tab4:
-    st.subheader("Credit Lifecycle Traceability")
-    st.markdown("A high-level architecture overview, showing how credits advance through the AeroCarbon Exchange process from initial data ingestion to finalized minting.")
-    
-    # --- System Process Flow Visualization (HTML/CSS) ---
-    # We use emojis inside circles as a substitution for the custom icons in the source image,
-    # mapping to the same stages: Data Ingestion (💾), Algorithmic Calc (🧮), ICAO/IATA Audit (🏢), Credit Issuance (📜).
-    # All stages have the green glow effect to indicate they are active components of the architecture.
-    process_flow_html = """
-    <div class="process-container">
-        <div class="connector-line"></div>
-        
-        <div class="process-step">
-            <div class="step-icon-circle">💾</div>
-            <div class="step-label">Data Ingestion</div>
-        </div>
-        <div class="process-step">
-            <div class="step-icon-circle">🧮</div>
-            <div class="step-label">Algorithmic Calc</div>
-        </div>
-        <div class="process-step">
-            <div class="step-icon-circle">🏢</div>
-            <div class="step-label">ICAO/IATA Audit</div>
-        </div>
-        <div class="process-step">
-            <div class="step-icon-circle">📜</div>
-            <div class="step-label">Credit Issuance</div>
-        </div>
-    </div>
-    """
-    st.markdown(process_flow_html, unsafe_allow_html=True)
-    
-    # --- Ensuring Integrity Card (HTML/CSS) ---
-    # Replicating the card from the bottom of the source image with generic text.
-    integrity_card_html = """
-    <div class="integrity-card">
-        <div class="integrity-title">Ensuring Integrity</div>
-        <div class="integrity-text">
-            To prevent double-counting and ensure market trust, AeroCarbon Exchange integrates directly with ICAO and IATA verification frameworks. Every credit generated is cross-referenced against global flight registries. This ensures that a unique, verifiable environmental claim is generated for every ton of avoided CO2.
-        </div>
-    </div>
-    """
-    st.markdown(integrity_card_html, unsafe_allow_html=True)
